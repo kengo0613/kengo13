@@ -1,0 +1,30 @@
+<h1>(オードリーのラジオに関するサイト)</h1>
+<h3>新規投稿ページ</h3>
+<%= form_for @japan do |f| %>
+  
+  <div class="field">
+    <%= f.label :放送回数  %>
+    <%= f.number_field :number, :size => 10 %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :日付 %>
+    <%= f.date_field :date %>
+  </div>
+
+
+  <div class="field">
+    <%= f.label :感想 %>
+    <%= f.text_field :comment, :size => 30 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :ゲスト %>
+    <%= f.text_field :guest, :size => 30 %>
+  </div>
+  <%= f.text_field :youtube_url, :size => 140 %>
+  
+  <%= f.submit "投稿する" %>
+<% end %>
+
+<%= link_to "一覧に戻る", japans_path %>

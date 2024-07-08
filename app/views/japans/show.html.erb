@@ -1,0 +1,50 @@
+<h1>オードリーのラジオに関するサイト</h1>
+<h3>一覧ページ</h3>
+<div class="japan">
+  <p><%= @japan.body %></p>
+  <p><%= @japan.created_at %></p>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= find_youtube_url(@japan.youtube_url) %>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <% if user_signed_in? %>
+      <% if current_user.already_liked?(@japan) %>
+        <%= button_to japan_like_path(@japan), method: :delete do %>
+          <p>いいねを取り消す</p><%= @japan.likes.count %>
+        <% end %>
+      <% else %>
+        <%= button_to japan_likes_path(@japan), method: :post do %>
+          <p>いいね</p><%= @japan.likes.count %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <p>いいねの数 = </p><%= @japan.likes.count %>
+    <% end %>
+  <%= link_to "編集する", edit_japan_path(@japan.id) %>
+</div>
+
+<h2>いいねしたユーザー</h2>
+<% @japan.liked_users.each do |user| %>
+  <li><%= user.email %></li>
+<% end %>
+
+<div class="comment-wrapper">
+  <p>コメント一覧</p>
+  <% @comments.each do |c| %>
+    <div>
+      <%= c.user.email unless c.user.blank? %>
+      <br>
+      <%= c.content %>
+    </div>
+      <br>
+  <% end %>
+
+  <% if user_signed_in? %>
+    <%= form_with(model: [@japan, @comment], local: true) do |f| %>
+      <%= f.text_area :content %>
+      <%= button_tag type: "submit" do %>
+        <i class="far fa-comments"></i> コメントする
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
+
+<%= link_to "Tweet一覧に戻る", japans_path %>

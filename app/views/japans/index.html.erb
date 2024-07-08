@@ -1,0 +1,58 @@
+<h1>オードリーのラジオに関するサイト</h1>
+<h3>一覧ページ</h3>
+
+<h3>投稿を検索</h3>
+<%= form_tag({controller: "japans", action: "index"}, method: :get) do %>
+  <%= text_field_tag :search %>
+  <%= submit_tag '検索する' %>
+<% end %>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.0727199207345!2d139.7581145760995!3d35.675211372589146!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188bf02fdfa2d7%3A0xa1e839b729becd54!2z5qCq5byP5Lya56S-44OL44OD44Od44Oz5pS-6YCB!5e0!3m2!1sja!2sjp!4v1718702007631!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+<% if user_signed_in? %>
+  <%= link_to "マイページへ", user_path(current_user.id) %>
+<% end %>
+<%= link_to "診断へ", perfumes_path %>
+<%= link_to "新規投稿へ", new_japan_path %>
+
+<div class="japans-container">
+  <% @japans.each do |t| %>
+  <div class="japan">
+    <% if t.user.present? %>
+      <%= t.user.email %>
+      <%= image_tag t.user.image_url, size: "250x200" if t.user.image? %>
+    <% else %>
+      <span>No user email</span>
+    <% end %>
+    <%= t.body %>
+
+    <% if user_signed_in? %>
+      <% if current_user.already_liked?(t) %>
+        <%= button_to japan_like_path(id: t.id, japan_id: t.id), method: :delete do %>
+          <p>いいねを取り消す</p><%= t.likes.count %>
+        <% end %>
+      <% else %>
+        <%= button_to japan_likes_path(id: t.id, japan_id: t.id), method: :post do %>
+          <p>いいね</p><%= t.likes.count %>
+        <% end %>
+      <% end %>
+    <% else %>
+        <p>いいねの数 = <%= t.likes.count %></p>
+    <% end %>
+
+    <%= t.comment %>
+    <%= t.guest %>
+    <%= t.number %>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= find_youtube_url(t.youtube_url) %>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+    <%= link_to "詳細へ", japan_path(t.id) %>
+
+    <% if user_signed_in? && current_user.id == t.user_id %>
+      <%= link_to "編集する", edit_japan_path(t.id) %>
+      <%= link_to "削除する", japan_path(t.id), method: :delete, data: { confirm: "本当に削除しますか？" } %>
+    <% end %>
+
+    <% if t.user.present? %>
+      <%= link_to t.user.name, user_path(t.user.id) %> 
+    <% end %>
+  </div>
+  <% end %>
+</div>
